@@ -14,3 +14,5 @@ print Dumper($parse->data);
 
 style ::= 1 or 2
 input ::= XML file name
+
+Tested with sample XML at http://msdn.microsoft.com/en-us/library/windows/desktop/ms762271(v=vs.85).aspx
