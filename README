@@ -1,0 +1,35 @@
+
+# Perl Module: simpleXMLParse
+# Author: Daniel Edward Graham
+# Copyright (c) Daniel Edward Graham 10/2012
+# Date: 10/10/2012
+# License: LGPL 3.0
+# 
+# Disclaimer: This is not intended for critical data
+# without undergoing further testing.
+#
+# As of v.1.4 it probably handles most XML
+# syntax except CDATA.
+# And, although I had tried to 
+# get it to work for something like the following:
+# <book id="a" title="Gone With The Wind" />
+#
+# As of v.1.4, the following is still required:
+# <book id="a" title="Gone With The Wind"></book> 
+# 
+# it doesn't appear to do that, yet.
+# 
+# Comments and suggestions are welcome:
+# daniel.e.graham@gmail.com 
+
+Synopsis:
+
+my $parse = new simpleXMLParse({input => $fn, style => $style});
+
+print Dumper($parse->data);
+
+style ::= 1 or 2
+input ::= XML file name
+
+This was tested with the sample XML file from:
+http://msdn.microsoft.com/en-us/library/windows/desktop/ms762271(v=vs.85).aspx
