@@ -21,8 +21,8 @@ use Data::Dumper;
 my $fn = $ARGV[0];
 my $style = $ARGV[1];
 
-my $parse = new simpleXMLParse({input => $fn, style => $style});
+my $parse = new SimpleXMLParse({input => $fn, style => $style});
 
-print Dumper($parse->data);
+print Dumper($parse->parse());
 
 

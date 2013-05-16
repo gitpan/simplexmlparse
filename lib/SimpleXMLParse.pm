@@ -1,11 +1,30 @@
-package simpleXMLParse;
+package SimpleXMLParse;
 
-# Perl Module: simpleXMLParse
+# Perl Module: SimpleXMLParse
 # Author: Daniel Edward Graham
 # Copyright (c) Daniel Edward Graham 10/2012
 # Date: 10/10/2012
 # License: LGPL 3.0
 # 
+
+require Exporter;
+use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
+@ISA = qw(Exporter);
+
+# This allows declaration	use SimpleXMLParse ':all';
+# If you do not need this, moving things directly into @EXPORT or @EXPORT_OK
+# will save memory.
+%EXPORT_TAGS = ( 'all' => [ qw(
+	
+) ] );
+
+@EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
+
+@EXPORT = qw(
+	
+);
+
+$VERSION = '1.5';
 
 use Carp;
 use strict;
@@ -39,15 +58,16 @@ sub new {
     return $ret;
 }
 
-sub data {
+sub parse {
     my $self = shift;
-    return $self->{"data"};
+    return $self->{data};
 }
 
 sub _convertToStyle {
     my $self = shift;
     my @recursearr = ($self->{"data"});
-    while (my $i = pop @recursearr) {
+    while (@recursearr) {
+        my $i = pop @recursearr;
         if (ref($i) eq "HASH") {
             foreach my $j (keys %$i) {
                 if ($j =~ /^(.*?)\_(.*?)\_([0-9]+)\_attr$/) {
@@ -129,7 +149,13 @@ sub _ParseXML {
         $attr =~ s/\>$//g;
     }
     else {
+      if ( $xml =~ /^[\s\n]*\<${firsttag}(\/\>|\s[^\>]*\/\>)(.*)$/ ) {
+        $attr = $1;
+        $innerxml = "";
+        $xmlfragment = $2;
+      } else {
         return $xml;
+      }
     }
     my $ixml = $innerxml;
     while ($ixml =~ /.*?\<${firsttag}(\>|\s[^\>]*\>)(.*?)$/) {
@@ -241,3 +267,40 @@ sub _ParseXML {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+SimpleXMLParse - Perl extension for pure perl XML parsing 
+
+=head1 SYNOPSIS
+
+  use SimpleXMLParse;
+  my $parse = new SimpleXMLParse({input => $fn, style => $style});
+
+  print Dumper($parse->parse());
+
+=head1 DESCRIPTION
+
+  SimpleXMLParse currently handles everything except CDATA.
+
+=head2 EXPORT
+
+  None by default.  
+
+=head1 SEE ALSO
+
+=head1 AUTHOR
+
+Daniel Graham, E<lt>dgraham@firstteamsoft.com<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2008-2013 by Daniel Edward Graham
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself, either Perl version 5.16.3 or,
+at your option, any later version of Perl 5 you may have available.
+
+
+=cut
