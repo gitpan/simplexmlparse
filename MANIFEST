@@ -2,5 +2,5 @@ Changes
 Makefile.PL
 MANIFEST
 README
-t/SimpleXMLParse.t
-lib/SimpleXMLParse.pm
+t/simpleXMLParse.t
+lib/simpleXMLParse.pm

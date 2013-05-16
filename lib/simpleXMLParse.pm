@@ -1,6 +1,6 @@
-package SimpleXMLParse;
+package simpleXMLParse;
 
-# Perl Module: SimpleXMLParse
+# Perl Module: simpleXMLParse
 # Author: Daniel Edward Graham
 # Copyright (c) Daniel Edward Graham 10/2012
 # Date: 10/10/2012
@@ -11,7 +11,7 @@ require Exporter;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 @ISA = qw(Exporter);
 
-# This allows declaration	use SimpleXMLParse ':all';
+# This allows declaration	use simpleXMLParse ':all';
 # If you do not need this, moving things directly into @EXPORT or @EXPORT_OK
 # will save memory.
 %EXPORT_TAGS = ( 'all' => [ qw(
@@ -271,18 +271,18 @@ __END__
 
 =head1 NAME
 
-SimpleXMLParse - Perl extension for pure perl XML parsing 
+simpleXMLParse - Perl extension for pure perl XML parsing 
 
 =head1 SYNOPSIS
 
-  use SimpleXMLParse;
-  my $parse = new SimpleXMLParse({input => $fn, style => $style});
+  use simpleXMLParse;
+  my $parse = new simpleXMLParse({input => $fn, style => $style});
 
   print Dumper($parse->parse());
 
 =head1 DESCRIPTION
 
-  SimpleXMLParse currently handles everything except CDATA.
+  simpleXMLParse currently handles everything except CDATA.
 
 =head2 EXPORT
 
