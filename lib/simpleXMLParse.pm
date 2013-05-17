@@ -24,7 +24,7 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 	
 );
 
-$VERSION = '1.7';
+$VERSION = '1.8';
 
 use Carp;
 use strict;
