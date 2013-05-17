@@ -2,8 +2,8 @@ package simpleXMLParse;
 
 # Perl Module: simpleXMLParse
 # Author: Daniel Edward Graham
-# Copyright (c) Daniel Edward Graham 10/2012
-# Date: 10/10/2012
+# Copyright (c) Daniel Edward Graham 2008-2013
+# Date: 5/16/2013 
 # License: LGPL 3.0
 # 
 
@@ -24,7 +24,7 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 	
 );
 
-$VERSION = '1.5';
+$VERSION = '1.6';
 
 use Carp;
 use strict;
