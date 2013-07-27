@@ -7,5 +7,5 @@ Revision history for Perl extension simpleXMLParse.
 1.9   Fri Jul 26 17:33:00 2013
         - fixes problem with algorithm dealing with nested same-name tags
 
-1.10  Fri Jul 26 18:17:00 2013
+2.0  Fri Jul 26 18:54:00 2013
         - fixes META.yml META.json

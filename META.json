@@ -1,5 +1,5 @@
 {
-   "abstract" : "Perl extension for pure perl XML parsing ",
+   "abstract" : "Perl extension for XML parsing ",
    "author" : [
       "Dan Graham <dgraham@localdomain>"
    ],
@@ -37,5 +37,5 @@
       }
    },
    "release_status" : "stable",
-   "version" : "1.10"
+   "version" : "2.0"
 }

@@ -1,5 +1,5 @@
 ---
-abstract: 'Perl extension for pure perl XML parsing '
+abstract: 'Perl extension for XML parsing '
 author:
   - 'Dan Graham <dgraham@localdomain>'
 build_requires:
@@ -19,4 +19,4 @@ no_index:
     - inc
 requires:
   Test: 0
-version: 1.10
+version: 2.0

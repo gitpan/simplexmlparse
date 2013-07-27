@@ -24,7 +24,7 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 	
 );
 
-$VERSION = '1.10';
+$VERSION = '2.0';
 
 use Carp;
 use strict;
@@ -275,7 +275,7 @@ __END__
 
 =head1 NAME
 
-simpleXMLParse - Perl extension for pure perl XML parsing 
+simpleXMLParse - Perl extension for XML parsing 
 
 =head1 SYNOPSIS
 
