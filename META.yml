@@ -1,14 +1,14 @@
 ---
-abstract: "This module parses XML into useful Perl data structures. It does this by a recursive function. RE's are used but are not the basis for parsing. Does not handle CDATA, yet."
+abstract: 'Perl extension for pure perl XML parsing '
 author:
-  - 'Daniel Graham'
+  - 'Dan Graham <dgraham@localdomain>'
 build_requires:
   ExtUtils::MakeMaker: 0
 configure_requires:
   ExtUtils::MakeMaker: 0
-dynamic_config: 0
+dynamic_config: 1
 generated_by: 'ExtUtils::MakeMaker version 6.72, CPAN::Meta::Converter version 2.130880'
-license: perl
+license: unknown
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
@@ -17,5 +17,6 @@ no_index:
   directory:
     - t
     - inc
-requires: {}
-version: 1.9
+requires:
+  Test: 0
+version: 1.10
