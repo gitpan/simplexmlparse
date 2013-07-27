@@ -24,7 +24,7 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 	
 );
 
-$VERSION = '1.8';
+$VERSION = '1.9';
 
 use Carp;
 use strict;
@@ -158,11 +158,13 @@ sub _ParseXML {
       }
     }
     my $ixml = $innerxml;
-    while ($ixml =~ /.*?\<${firsttag}(\>|\s[^\>]*\>)(.*?)$/) {
+    while ($ixml =~ /^.*?\<${firsttag}(\>|\s[^\>]*\>)(.*?)$/) {
         $ixml = $2;
         $innerxml .= "</${firsttag}>";
-        if ($xmlfragment =~ /(.*?)\<\/${firsttag}\>(.*)$/) {
-            $innerxml .= $1;
+        if ($xmlfragment =~ /^(.*?)\<\/${firsttag}\>(.*)$/) {
+            my $ix = $1;
+            $innerxml .= $ix;
+            $ixml .= $ix; 
             $xmlfragment = $2;
         } else {
             die "Invalid XML";
@@ -224,7 +226,9 @@ sub _ParseXML {
             $ixml = $2;
             $innerxml .= "</${firsttag}>";
             if ($xmlfragment2 =~ /(.*?)\<\/${firsttag}\>(.*)$/) {
-                $innerxml .= $1;
+                my $ix = $1;
+                $innerxml .= $ix;
+                $ixml .= $ix;
                 $xmlfragment2 = $2;
             } else {
                 die "Invalid XML";
@@ -282,7 +286,8 @@ simpleXMLParse - Perl extension for pure perl XML parsing
 
 =head1 DESCRIPTION
 
-  simpleXMLParse currently handles everything except CDATA.
+  simpleXMLParse currently does not handle CDATA. style is specified
+  as 1 or 2. 
 
 =head2 EXPORT
 

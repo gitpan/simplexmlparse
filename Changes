@@ -4,3 +4,5 @@ Revision history for Perl extension simpleXMLParse.
 	- original version; created by h2xs 1.23 with options
 		-AX simpleXMLParse -b 5.5.0
 
+1.9   Fri July 26 17:33:00 2013
+        - fixes problem with algorithm dealing with nested same-name tags
