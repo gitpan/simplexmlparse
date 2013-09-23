@@ -1,12 +1,12 @@
 {
-   "abstract" : "Perl extension for XML parsing ",
+   "abstract" : "This is an XML Parser that is based on a recursive function. It uses RE's but that is not the basis for the parsing.",
    "author" : [
-      "Dan Graham <dgraham@localdomain>"
+      "Daniel Edward Graham"
    ],
    "dynamic_config" : 1,
    "generated_by" : "ExtUtils::MakeMaker version 6.72, CPAN::Meta::Converter version 2.130880",
    "license" : [
-      "unknown"
+      "perl_5"
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
@@ -31,11 +31,9 @@
          }
       },
       "runtime" : {
-         "requires" : {
-            "Test" : "0"
-         }
+         "requires" : {}
       }
    },
    "release_status" : "stable",
-   "version" : "2.0"
+   "version" : "2.1"
 }

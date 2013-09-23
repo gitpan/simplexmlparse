@@ -1,14 +1,14 @@
 ---
-abstract: 'Perl extension for XML parsing '
+abstract: "This is an XML Parser that is based on a recursive function. It uses RE's but that is not the basis for the parsing."
 author:
-  - 'Dan Graham <dgraham@localdomain>'
+  - 'Daniel Edward Graham'
 build_requires:
   ExtUtils::MakeMaker: 0
 configure_requires:
   ExtUtils::MakeMaker: 0
 dynamic_config: 1
 generated_by: 'ExtUtils::MakeMaker version 6.72, CPAN::Meta::Converter version 2.130880'
-license: unknown
+license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
@@ -17,6 +17,5 @@ no_index:
   directory:
     - t
     - inc
-requires:
-  Test: 0
-version: 2.0
+requires: {}
+version: 2.1

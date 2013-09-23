@@ -9,3 +9,7 @@ Revision history for Perl extension simpleXMLParse.
 
 2.0  Fri Jul 26 18:54:00 2013
         - fixes META.yml META.json
+
+2.1  Sun Sep 22 20:31:00 2013
+        - fixes quote parsing, UTF-8, and support for CDATA
+

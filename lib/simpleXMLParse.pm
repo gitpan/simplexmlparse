@@ -24,10 +24,12 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 	
 );
 
-$VERSION = '2.0';
+$VERSION = '2.1';
 
 use Carp;
 use strict;
+
+use open ':encoding(utf8)';
 
 sub new {
     my $class = shift;
@@ -118,11 +120,27 @@ sub _convertToStyle {
    }
 }
 
+my @cdata;
+my $cdataInd = 0;
+
+sub cdatasub {
+    my $cdata = shift;
+    $cdata[$cdataInd] = $cdata;
+    return "0x0CDATA0x0".($cdataInd++)."0x0";
+} 
+    
+sub cdatasubout {
+    my $ind = shift; 
+    my $cdata = $cdata[$ind];
+    return $cdata;
+} 
+
 sub _ParseXML {
     my ($xml) = @_;
     $xml =~ s/\n//g;
     $xml =~ s/\<\!\-\-.*?\-\-\>//g;
     $xml =~ s/\<\?xml.*?\?\>//g;
+    $xml =~ s/\<\!\[CDATA\[(.*?)\]\]\>/&cdatasub($1)/eg;
     my $rethash = ();
     my @retarr;
     my $firsttag = $xml;
@@ -154,6 +172,9 @@ sub _ParseXML {
         $innerxml = "";
         $xmlfragment = $2;
       } else {
+        if (!ref($xml)) {
+            $xml =~ s/0x0CDATA0x0(\d+?)0x0/&cdatasubout($1)/eg;
+        }
         return $xml;
       }
     }
@@ -173,9 +194,12 @@ sub _ParseXML {
     my $nextparse = _ParseXML($innerxml);
     $rethash->{"$firsttag"} = $nextparse;
     my @attrarr;
-    while ( $attr =~ s/^[\s\n]*([^\s\=\n]+)\=[\"\'](.*?)[\"\'](.*)$/$3/g ) {
-        push @attrarr, $1;
-        push @attrarr, $2;
+    while ( $attr =~ s/^[\s\n]*([^\s\=\n]+)\=(\".*?\"|\'.*?\')(.*)$/$3/g ) {
+        my ($name, $val) = ($1, $2);
+        $val =~ s/^\'(.*)\'$/$1/g;
+        $val =~ s/^\"(.*)\"$/$1/g;
+        push @attrarr, $name;
+        push @attrarr, $val;
     }
     my $attrcnt = 0;
     while ( my $val = shift(@attrarr) ) {
@@ -234,9 +258,12 @@ sub _ParseXML {
                 die "Invalid XML";
             }
         }        
-        while ( $attr =~ s/^[\s\n]*([^\s\=\n]+)\=[\"\'](.*?)[\"\'](.*)$/$3/g ) {
-            push @attrarr, $1;
-            push @attrarr, $2;
+        while ( $attr =~ s/^[\s\n]*([^\s\=\n]+)\=(\".*?\"|\'.*?\')(.*)$/$3/g ) {
+            my ($name, $val) = ($1, $2);
+            $val =~ s/^\'(.*)\'$/$1/g;
+            $val =~ s/^\"(.*)\"$/$1/g;
+            push @attrarr, $name;
+            push @attrarr, $val;
         }
         while ( my $val = shift(@attrarr) ) {
 #            if (defined($rethash->{"$val" . "_$firsttag" . "_attr" })) {
@@ -275,19 +302,21 @@ __END__
 
 =head1 NAME
 
-simpleXMLParse - Perl extension for XML parsing 
+simpleXMLParse - Perl extension for pure perl XML parsing 
 
 =head1 SYNOPSIS
 
   use simpleXMLParse;
+  use Data::Dumper;
   my $parse = new simpleXMLParse({input => $fn, style => $style});
 
   print Dumper($parse->parse());
 
 =head1 DESCRIPTION
 
-  simpleXMLParse currently does not handle CDATA. style is specified
-  as 1 or 2. 
+  simpleXMLParse currently handles everything including CDATA.
+
+  style is "1" or "2".
 
 =head2 EXPORT
 
@@ -302,6 +331,8 @@ Daniel Graham, E<lt>dgraham@firstteamsoft.com<gt>
 =head1 COPYRIGHT AND LICENSE
 
 Copyright (C) 2008-2013 by Daniel Edward Graham
+
+LGPL 3.0
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.16.3 or,

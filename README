@@ -1,16 +1,41 @@
-simpleXMLParse version 0.01
+simpleXMLParse version 2.1 
 ===========================
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
+simpleXMLParse - Perl extension for pure perl XML parsing 
 
-A README file is required for CPAN modules since CPAN extracts the
-README file from a module distribution so that people browsing the
-archive can use it get an idea of the modules uses. It is usually a
-good idea to provide version information here so that people can
-decide whether fixes for the module are worth downloading.
+SYNOPSIS
+
+  use simpleXMLParse;
+  use Data::Dumper;
+  my $parse = new simpleXMLParse({input => $fn, style => $style});
+
+  print Dumper($parse->parse());
+
+DESCRIPTION
+
+  simpleXMLParse currently handles everything including CDATA.
+
+  style is "1" or "2".
+
+EXPORT
+
+  None by default.  
+
+SEE ALSO
+
+AUTHOR
+
+Daniel Graham, E<lt>dgraham@firstteamsoft.com<gt>
+
+COPYRIGHT AND LICENSE
+
+Copyright (C) 2008-2013 by Daniel Edward Graham
+
+LGPL 3.0
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself, either Perl version 5.16.3 or,
+at your option, any later version of Perl 5 you may have available.
 
 INSTALLATION
 
