@@ -2,8 +2,8 @@ package simpleXMLParse;
 
 # Perl Module: simpleXMLParse
 # Author: Daniel Edward Graham
-# Copyright (c) Daniel Edward Graham 2008-2013
-# Date: 5/16/2013 
+# Copyright (c) Daniel Edward Graham 2008-2014
+# Date: 01/03/2014 
 # License: LGPL 3.0
 # 
 
@@ -24,12 +24,16 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 	
 );
 
-$VERSION = '2.1';
+$VERSION = '2.2';
 
 use Carp;
 use strict;
 
 use open ':encoding(utf8)';
+
+my @cdata;
+my $cdataInd = 0;
+my $MAXIND = 10000;
 
 sub new {
     my $class = shift;
@@ -57,6 +61,7 @@ sub new {
         warn "alt style";
         $ret->_convertToStyle();
     }
+    $cdataInd = $cdataInd % $MAXIND;
     return $ret;
 }
 
@@ -120,13 +125,11 @@ sub _convertToStyle {
    }
 }
 
-my @cdata;
-my $cdataInd = 0;
-
 sub cdatasub {
     my $cdata = shift;
-    $cdata[$cdataInd] = $cdata;
-    return "0x0CDATA0x0".($cdataInd++)."0x0";
+    my $tmpind = $cdataInd++;
+    $cdata[$tmpind] = $cdata;
+    return "0x0CDATA0x0".($tmpind)."0x0";
 } 
     
 sub cdatasubout {
@@ -145,7 +148,7 @@ sub _ParseXML {
     my @retarr;
     my $firsttag = $xml;
     my ( $attr, $innerxml, $xmlfragment );
-    $firsttag =~ s/^[\s\n]*\<([^\s\>\n]*).*$/$1/g;
+    $firsttag =~ s/^[\s\n]*\<([^\s\>\n\/]*).*$/$1/g;
     $firsttag =~ s/\\/\\\\/g;
     $firsttag =~ s/\*/\\\*/g;
     $firsttag =~ s/\{/\\\{/g;
