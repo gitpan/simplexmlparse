@@ -1,5 +1,5 @@
 ---
-abstract: "This is an XML Parser that is based on a recursive function. It uses RE's but that is not the basis for the parsing."
+abstract: "This is an XML Parser that is based on a recursive function and RE's. It generates a JSON-like Perl data structure that can be easily traversed."
 author:
   - 'Daniel Edward Graham'
 build_requires:
@@ -18,4 +18,4 @@ no_index:
     - t
     - inc
 requires: {}
-version: 2.2
+version: 2.3

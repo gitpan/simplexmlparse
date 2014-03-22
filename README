@@ -1,4 +1,4 @@
-simpleXMLParse version 2.2 
+simpleXMLParse version 2.3 
 ===========================
 
 simpleXMLParse - Perl extension for pure perl XML parsing 
@@ -29,7 +29,7 @@ Daniel Graham, E<lt>dgraham@firstteamsoft.com<gt>
 
 COPYRIGHT AND LICENSE
 
-Copyright (C) 2008-2013 by Daniel Edward Graham
+Copyright (C) 2008-2014 by Daniel Edward Graham
 
 LGPL 3.0
 
@@ -56,7 +56,7 @@ COPYRIGHT AND LICENCE
 
 Put the correct copyright and licence information here.
 
-Copyright (C) 2013 by Dan Graham
+Copyright (C) 2008-2014 by Dan Graham
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.16.3 or,

@@ -2,8 +2,8 @@ package simpleXMLParse;
 
 # Perl Module: simpleXMLParse
 # Author: Daniel Edward Graham
-# Copyright (c) Daniel Edward Graham 2008-2014
-# Date: 01/03/2014 
+# Copyright (c) Daniel Edward Graham 2008-2013
+# Date: 5/16/2013 
 # License: LGPL 3.0
 # 
 
@@ -24,7 +24,8 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 	
 );
 
-$VERSION = '2.2';
+#$VERSION = '2.3';
+use version; our $VERSION = qv(2.3);
 
 use Carp;
 use strict;
@@ -197,7 +198,7 @@ sub _ParseXML {
     my $nextparse = _ParseXML($innerxml);
     $rethash->{"$firsttag"} = $nextparse;
     my @attrarr;
-    while ( $attr =~ s/^[\s\n]*([^\s\=\n]+)\=(\".*?\"|\'.*?\')(.*)$/$3/g ) {
+    while ( $attr =~ s/^[\s\n]*([^\s\=\n]+)\s*\=\s*(\".*?\"|\'.*?\')(.*)$/$3/g ) {
         my ($name, $val) = ($1, $2);
         $val =~ s/^\'(.*)\'$/$1/g;
         $val =~ s/^\"(.*)\"$/$1/g;
@@ -212,22 +213,37 @@ sub _ParseXML {
     my ( $xmlfragment1, $xmlfragment2 );
     my %attrhash;
     $attrcnt++;
-    while ( $xmlfragment =~
-        /^(.*?)\<${firsttag}(\>|\s[^\>]*\>)(.*?)\<\/${firsttag}\>(.*)$/ )
-    {
-        if ( !$retflag ) {
-            push @retarr, $nextparse;
+    while (1) {
+        if ( $xmlfragment =~
+            /^(.*?)\<${firsttag}(\>|\s[^\>]*\>)(.*?)\<\/${firsttag}\>(.*)$/ )
+        {
+            if ( !$retflag ) {
+                push @retarr, $nextparse;
+            }
+            $retflag      = 1;
+            $xmlfragment1 = $1;
+            $attr         = $2;
+            $innerxml     = $3;
+            $xmlfragment2 = $4;
+        } else {
+          if ( $xmlfragment =~ /^(.*?)\<${firsttag}(\/\>|\s[^\>]*\/\>)(.*)$/ ) {
+            if ( !$retflag ) {
+                push @retarr, $nextparse;
+            }
+            $retflag      = 1;
+            $xmlfragment1 = $1;
+            $attr = $2;
+            $innerxml = "";
+            $xmlfragment2 = $3;
+          } else {
+            last;
+          }
         }
-        $retflag      = 1;
-        $xmlfragment1 = $1;
-        $attr         = $2;
-        $innerxml     = $3;
-        $xmlfragment2 = $4;
         $attr =~ s/\>$//g;
         my %opening = ( );
         my %closing = ( );
         my $frag = $xmlfragment1;
-        while ($frag =~ /^(.*?)\<([^\s\n]+).*?\>(.*)$/) {
+        while ($frag =~ /^(.*?)\<([^\s\n\/]+)[^\/]*?\>(.*)$/) {
             my $tg = $2;
             $frag = $3;
             $opening{$tg}++;
@@ -247,7 +263,7 @@ sub _ParseXML {
             }
         }
         next if ($flag);
-        $xmlfragment  = $xmlfragment1 . $xmlfragment2;
+#        $xmlfragment  = $xmlfragment1 . $xmlfragment2;
         my $ixml = $innerxml;
         while ($ixml =~ /.*?\<${firsttag}(\>|\s[^\>]*\>)(.*?)$/) {
             $ixml = $2;
@@ -261,7 +277,8 @@ sub _ParseXML {
                 die "Invalid XML";
             }
         }        
-        while ( $attr =~ s/^[\s\n]*([^\s\=\n]+)\=(\".*?\"|\'.*?\')(.*)$/$3/g ) {
+        $xmlfragment  = $xmlfragment1 . $xmlfragment2;
+        while ( $attr =~ s/^[\s\n]*([^\s\=\n]+)\s*\=\s*(\".*?\"|\'.*?\')(.*)$/$3/g ) {
             my ($name, $val) = ($1, $2);
             $val =~ s/^\'(.*)\'$/$1/g;
             $val =~ s/^\"(.*)\"$/$1/g;
