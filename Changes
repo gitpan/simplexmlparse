@@ -18,3 +18,6 @@ Revision history for Perl extension simpleXMLParse.
 
 2.3  Sat Mar 22 16:00:00 2014
         - fixes bug in parsing multiple same-name tags and allows whitespace before and after '=' 
+
+2.4  Sat Mar 22 18:22:00 2014
+        - fixes bug in parsing multiple same-name tags into arrayref 
