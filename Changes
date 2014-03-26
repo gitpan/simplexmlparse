@@ -21,3 +21,6 @@ Revision history for Perl extension simpleXMLParse.
 
 2.4  Sat Mar 22 18:22:00 2014
         - fixes bug in parsing multiple same-name tags into arrayref 
+
+2.5  Tue Mar 25 18:31:00 2014
+        - fixes bugs in the parsing algorithm 

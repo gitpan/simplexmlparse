@@ -1,4 +1,4 @@
-simpleXMLParse version 2.4 
+simpleXMLParse version 2.5 
 ===========================
 
 simpleXMLParse - Perl extension for pure perl XML parsing 
@@ -16,6 +16,9 @@ DESCRIPTION
   simpleXMLParse currently handles everything including CDATA.
 
   style is "1" or "2".
+
+  style "1" will create attribute key-value pairs with an "_attr" suffix convention
+  style "2" will create attribute key-value pairs in same format as nodes while handling collisions
 
 EXPORT
 

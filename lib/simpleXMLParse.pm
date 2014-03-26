@@ -3,7 +3,7 @@ package simpleXMLParse;
 # Perl Module: simpleXMLParse
 # Author: Daniel Edward Graham
 # Copyright (c) Daniel Edward Graham 2008-2013
-# Date: 5/16/2013 
+# Date: 3/25/2014 
 # License: LGPL 3.0
 # 
 
@@ -24,7 +24,7 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 	
 );
 
-$VERSION = '2.4';
+$VERSION = '2.5';
 
 use Carp;
 use strict;
@@ -162,7 +162,7 @@ sub _ParseXML {
     $firsttag =~ s/\./\\\./g;
     $firsttag =~ s/\-/\\\-/g;
 
-    if ( $xml =~ /^[\s\n]*\<${firsttag}(\>|\s[^\>]*\>)(.*?)\<\/${firsttag}\>(.*)$/ )
+    if ( $xml =~ /^[\s\n]*\<${firsttag}(\>|\s[^\>]*[^\/]\>)(.*?)\<\/${firsttag}\>(.*)$/ )
     {
         $attr        = $1;
         $innerxml    = $2;
@@ -182,8 +182,9 @@ sub _ParseXML {
       }
     }
     my $ixml = $innerxml;
-    while ($ixml =~ /^.*?\<${firsttag}(\>|\s[^\>]*\>)(.*?)$/) {
+    while ($ixml =~ /^.*?\<${firsttag}(\>|\s[^\>]*[^\/]\>)(.*?)$/) {
         $ixml = $2;
+        print STDERR "***\n";
         $innerxml .= "</${firsttag}>";
         if ($xmlfragment =~ /^(.*?)\<\/${firsttag}\>(.*)$/) {
             my $ix = $1;
@@ -191,7 +192,7 @@ sub _ParseXML {
             $ixml .= $ix; 
             $xmlfragment = $2;
         } else {
-            die "Invalid XML";
+            die "Invalid XML innerxml: $innerxml\nixml: $ixml\nxmlfragment: $xmlfragment\n";
         }
     }        
     my $nextparse = _ParseXML($innerxml);
@@ -214,7 +215,7 @@ sub _ParseXML {
     $attrcnt++;
     while (1) {
         if ( $xmlfragment =~
-            /^(.*?)\<${firsttag}(\>|\s[^\>]*\>)(.*?)\<\/${firsttag}\>(.*)$/ )
+            /^(.*?)\<${firsttag}(\>|\s[^\>]*[^\/]\>)(.*?)\<\/${firsttag}\>(.*)$/ )
         {
             if ( !$retflag ) {
                 push @retarr, $nextparse;
@@ -264,7 +265,7 @@ sub _ParseXML {
         next if ($flag);
 #        $xmlfragment  = $xmlfragment1 . $xmlfragment2;
         my $ixml = $innerxml;
-        while ($ixml =~ /.*?\<${firsttag}(\>|\s[^\>]*\>)(.*?)$/) {
+        while ($ixml =~ /.*?\<${firsttag}(\>|\s[^\>]*[^\/]\>)(.*?)$/) {
             $ixml = $2;
             $innerxml .= "</${firsttag}>";
             if ($xmlfragment2 =~ /(.*?)\<\/${firsttag}\>(.*)$/) {
