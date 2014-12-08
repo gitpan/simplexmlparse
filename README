@@ -1,4 +1,4 @@
-simpleXMLParse version 2.6 
+simpleXMLParse version 2.7 
 ===========================
 
 simpleXMLParse - Perl extension for pure perl XML parsing 
@@ -7,13 +7,13 @@ SYNOPSIS
 
   use simpleXMLParse;
   use Data::Dumper;
-  my $parse = new simpleXMLParse({input => $fn, style => $style});
+  my $parse = new simpleXMLParse(input => $fn, style => $style);
 
   print Dumper($parse->parse());
 
 DESCRIPTION
 
-  simpleXMLParse currently handles everything including CDATA.
+  simpleXMLParse currently does not handle DTD's or DTD syntax. 
 
   style is "1" or "2".
 

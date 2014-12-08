@@ -27,3 +27,7 @@ Revision history for Perl extension simpleXMLParse.
 
 2.6  Thu Mar 27 18:41:00 2014
         - fixes Makefile.PL 
+
+2.7  Sun Dec 07 17:18:00 2014
+        - Strips out ENTITY tags within DOCTYPE, as custom ENTITY not supported yet. fixes DOCTYPE tag problem. now handles the 5 predefined entities. Do CDATA scan first (before stripping comments) constructor now does not require { }'s in argument list.  fixes problem with metacharacters in tag names fixes problem with newline stripping.
+

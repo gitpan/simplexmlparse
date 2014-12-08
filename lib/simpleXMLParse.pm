@@ -3,7 +3,7 @@ package simpleXMLParse;
 # Perl Module: simpleXMLParse
 # Author: Daniel Edward Graham
 # Copyright (c) Daniel Edward Graham 2008-2014
-# Date: 3/25/2014 
+# Date: 12/7/2014 
 # License: LGPL 3.0
 # 
 
@@ -24,7 +24,7 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 	
 );
 
-$VERSION = '2.6';
+$VERSION = '2.7';
 
 use Carp;
 use strict;
@@ -37,28 +37,20 @@ my $MAXIND = 10000;
 
 sub new {
     my $class = shift;
-    if ( @_ != 1 ) {
-        croak "Invalid usage (new)\n";
-    }
-    my $inputfile = shift;
+    my %args = (@_ == 1) ? ((ref($_[0]) eq 'HASH') ? %{$_[0]}:(input => $_[0])):@_;
     my $altstyle = 0;
     my $fn;
-    if ( ref($inputfile) eq "HASH" ) {
-        $fn = $inputfile->{"input"};
-        $altstyle = 1 if ($inputfile->{"style"} eq '2');
-    }
+    $fn = $args{"input"};
+    $altstyle = 1 if ($args{"style"} eq '2');
     my $self = {};
     $self->{"xml"}  = undef;
     $self->{"data"} = undef;
     open( INFILE, "$fn" ) or croak "Unable to process [$fn]\n";
     $self->{"xml"} = join '', <INFILE>;
     close(INFILE);
-    $self->{"xml"} =~ s/\<\?[^\>]*?\?\>//g;
-    $self->{"xml"} =~ s/\<\!\-\-[^\>]*?\-\-\>//g;
     $self->{"data"} = _ParseXML( $self->{"xml"} );
     my $ret = bless $self;
     if ($altstyle) {
-        warn "alt style";
         $ret->_convertToStyle();
     }
     $cdataInd = $cdataInd % $MAXIND;
@@ -125,68 +117,107 @@ sub _convertToStyle {
    }
 }
 
-sub cdatasub {
+sub _cdatasub {
     my $cdata = shift;
     my $tmpind = $cdataInd++;
     $cdata[$tmpind] = $cdata;
     return "0x0CDATA0x0".($tmpind)."0x0";
 } 
     
-sub cdatasubout {
+sub _cdatasubout {
     my $ind = shift; 
     my $cdata = $cdata[$ind];
     return $cdata;
 } 
 
+sub _unescp {
+    my $firsttag = shift;
+    $firsttag =~ s/\\\\/\\/gs;
+    $firsttag =~ s/\\\*/\*/gs;
+    $firsttag =~ s/\\\|/\|/gs;
+    $firsttag =~ s/\\\$/\$/gs;
+    $firsttag =~ s/\\\?/\?/gs;
+    $firsttag =~ s/\\\{/\{/gs;
+    $firsttag =~ s/\\\}/\}/gs;
+    $firsttag =~ s/\\\(/\(/gs;
+    $firsttag =~ s/\\\)/\)/gs;
+    $firsttag =~ s/\\\+/\+/gs;
+    $firsttag =~ s/\\\[/\[/gs;
+    $firsttag =~ s/\\\]/\]/gs;
+    $firsttag =~ s/\\\./\./gs;
+    $firsttag =~ s/\\\^/\^/gs;
+    $firsttag =~ s/\\\-/\-/gs;
+    return $firsttag;
+}
+
+sub _entity {
+    my $text = shift;
+    $text =~ s/\&lt\;/\</g;
+    $text =~ s/\&gt\;/\>/g;
+    $text =~ s/\&amp\;/\&/g;
+    $text =~ s/\&apos\;/\'/g;
+    $text =~ s/\&quot\;/\"/g;
+    return $text;
+}
+
 sub _ParseXML {
     my ($xml) = @_;
-    $xml =~ s/\n//g;
-    $xml =~ s/\<\!\-\-.*?\-\-\>//g;
-    $xml =~ s/\<\?xml.*?\?\>//g;
-    $xml =~ s/\<\!\[CDATA\[(.*?)\]\]\>/&cdatasub($1)/eg;
+#    $xml =~ s/\n//g;
+    $xml =~ s/\<\!\[CDATA\[(.*?)\]\]\>/&_cdatasub($1)/egs;
+    $xml =~ s/\<\!\-\-.*?\-\-\>//gs;
+    $xml =~ s/\<\?xml.*?\?\>//gs;
+    $xml =~ s/\<\?[^\>]*?\?\>//gs;
+    $xml =~ s/\<\!\-\-[^\>]*?\-\-\>//gs;
+    $xml =~ s/\<\!ELEMENT[^\>]*?\>//gs;
+    $xml =~ s/\<\!ENTITY[^\>]*?\>//gs;
+    $xml =~ s/\<\!DOCTYPE[^\>]*?\>//gs;
     my $rethash = ();
     my @retarr;
     my $firsttag = $xml;
     my ( $attr, $innerxml, $xmlfragment );
-    $firsttag =~ s/^[\s\n]*\<([^\s\>\n\/]*).*$/$1/g;
-    $firsttag =~ s/\\/\\\\/g;
-    $firsttag =~ s/\*/\\\*/g;
-    $firsttag =~ s/\{/\\\{/g;
-    $firsttag =~ s/\}/\\\}/g;
-    $firsttag =~ s/\(/\\\(/g;
-    $firsttag =~ s/\)/\\\)/g;
-    $firsttag =~ s/\=/\\\=/g;
-    $firsttag =~ s/\+/\\\+/g;
-    $firsttag =~ s/\[/\\\[/g;
-    $firsttag =~ s/\]/\\\]/g;
-    $firsttag =~ s/\./\\\./g;
-    $firsttag =~ s/\-/\\\-/g;
+    $firsttag =~ s/^[\s\n]*\<([^\s\>\n\/]*).*$/$1/gs;
+    $firsttag =~ s/\\/\\\\/gs;
+    $firsttag =~ s/\*/\\\*/gs;
+    $firsttag =~ s/\|/\\\|/gs;
+    $firsttag =~ s/\$/\\\$/gs;
+    $firsttag =~ s/\?/\\\?/gs;
+    $firsttag =~ s/\{/\\\{/gs;
+    $firsttag =~ s/\}/\\\}/gs;
+    $firsttag =~ s/\(/\\\(/gs;
+    $firsttag =~ s/\)/\\\)/gs;
+    $firsttag =~ s/\+/\\\+/gs;
+    $firsttag =~ s/\[/\\\[/gs;
+    $firsttag =~ s/\]/\\\]/gs;
+    $firsttag =~ s/\./\\\./gs;
+    $firsttag =~ s/\^/\\\^/gs;
+    $firsttag =~ s/\-/\\\-/gs;
 
-    if ( $xml =~ /^[\s\n]*\<${firsttag}(\>|\s[^\>]*[^\/]\>)(.*?)\<\/${firsttag}\>(.*)$/ )
+    if ( $xml =~ /^[\s\n]*\<${firsttag}(\>|\s[^\>]*[^\/]\>)(.*?)\<\/${firsttag}\>(.*)$/s )
     {
         $attr        = $1;
         $innerxml    = $2;
         $xmlfragment = $3;
-        $attr =~ s/\>$//g;
+        $attr =~ s/\>$//gs;
     }
     else {
-      if ( $xml =~ /^[\s\n]*\<${firsttag}(\/\>|\s[^\>]*\/\>)(.*)$/ ) {
+      if ( $xml =~ /^[\s\n]*\<${firsttag}(\/\>|\s[^\>]*\/\>)(.*)$/s ) {
         $attr = $1;
         $innerxml = "";
         $xmlfragment = $2;
       } else {
         if (!ref($xml)) {
-            $xml =~ s/0x0CDATA0x0(\d+?)0x0/&cdatasubout($1)/eg;
+            $xml = _entity($xml);
+            $xml =~ s/0x0CDATA0x0(\d+?)0x0/&_cdatasubout($1)/egs;
         }
         return $xml;
       }
     }
     my $ixml = $innerxml;
-    while ($ixml =~ /^.*?\<${firsttag}(\>|\s[^\>]*[^\/]\>)(.*?)$/) {
+    while ($ixml =~ /^.*?\<${firsttag}(\>|\s[^\>]*[^\/]\>)(.*?)$/s) {
         $ixml = $2;
         print STDERR "***\n";
         $innerxml .= "</${firsttag}>";
-        if ($xmlfragment =~ /^(.*?)\<\/${firsttag}\>(.*)$/) {
+        if ($xmlfragment =~ /^(.*?)\<\/${firsttag}\>(.*)$/s) {
             my $ix = $1;
             $innerxml .= $ix;
             $ixml .= $ix; 
@@ -196,18 +227,18 @@ sub _ParseXML {
         }
     }        
     my $nextparse = _ParseXML($innerxml);
-    $rethash->{"$firsttag"} = $nextparse;
+    $rethash->{&_unescp($firsttag)} = $nextparse;
     my @attrarr;
-    while ( $attr =~ s/^[\s\n]*([^\s\=\n]+)\s*\=\s*(\".*?\"|\'.*?\')(.*)$/$3/g ) {
+    while ( $attr =~ s/^[\s\n]*([^\s\=\n]+)\s*\=\s*(\".*?\"|\'.*?\')(.*)$/$3/gs ) {
         my ($name, $val) = ($1, $2);
-        $val =~ s/^\'(.*)\'$/$1/g;
-        $val =~ s/^\"(.*)\"$/$1/g;
+        $val =~ s/^\'(.*)\'$/$1/gs;
+        $val =~ s/^\"(.*)\"$/$1/gs;
         push @attrarr, $name;
-        push @attrarr, $val;
+        push @attrarr, _entity($val);
     }
     my $attrcnt = 0;
     while ( my $val = shift(@attrarr) ) {
-        $rethash->{ "$val" . "_${firsttag}_" . $attrcnt . "_attr" } = shift(@attrarr);
+        $rethash->{ "$val" . "_".&_unescp(${firsttag})."_" . $attrcnt . "_attr" } = shift(@attrarr);
     }
     my $retflag = 0;
     my ( $xmlfragment1, $xmlfragment2 );
@@ -215,7 +246,7 @@ sub _ParseXML {
     $attrcnt++;
     while (1) {
         if ( $xmlfragment =~
-            /^(.*?)\<${firsttag}(\>|\s[^\>]*[^\/]\>)(.*?)\<\/${firsttag}\>(.*)$/ )
+            /^(.*?)\<${firsttag}(\>|\s[^\>]*[^\/]\>)(.*?)\<\/${firsttag}\>(.*)$/s )
         {
             if ( !$retflag ) {
                 push @retarr, $nextparse;
@@ -226,7 +257,7 @@ sub _ParseXML {
             $innerxml     = $3;
             $xmlfragment2 = $4;
         } else {
-          if ( $xmlfragment =~ /^(.*?)\<${firsttag}(\/\>|\s[^\>]*\/\>)(.*)$/ ) {
+          if ( $xmlfragment =~ /^(.*?)\<${firsttag}(\/\>|\s[^\>]*\/\>)(.*)$/s ) {
             if ( !$retflag ) {
                 push @retarr, $nextparse;
             }
@@ -239,17 +270,17 @@ sub _ParseXML {
             last;
           }
         }
-        $attr =~ s/\>$//g;
+        $attr =~ s/\>$//gs;
         my %opening = ( );
         my %closing = ( );
         my $frag = $xmlfragment1;
-        while ($frag =~ /^(.*?)\<([^\s\n\/]+)[^\/]*?\>(.*)$/) {
+        while ($frag =~ /^(.*?)\<([^\s\n\/]+)[^\/]*?\>(.*)$/s) {
             my $tg = $2;
             $frag = $3;
             $opening{$tg}++;
         }
         my $frag = $xmlfragment1;
-        while ($frag =~ /^(.*?)\<\/([^\s\n]+)\>(.*)$/) {
+        while ($frag =~ /^(.*?)\<\/([^\s\n]+)\>(.*)$/s) {
             my $tg = $2;
             $frag = $3;
             $closing{$tg}++;
@@ -263,12 +294,11 @@ sub _ParseXML {
             }
         }
         next if ($flag);
-#        $xmlfragment  = $xmlfragment1 . $xmlfragment2;
         my $ixml = $innerxml;
-        while ($ixml =~ /.*?\<${firsttag}(\>|\s[^\>]*[^\/]\>)(.*?)$/) {
+        while ($ixml =~ /.*?\<${firsttag}(\>|\s[^\>]*[^\/]\>)(.*?)$/s) {
             $ixml = $2;
             $innerxml .= "</${firsttag}>";
-            if ($xmlfragment2 =~ /(.*?)\<\/${firsttag}\>(.*)$/) {
+            if ($xmlfragment2 =~ /(.*?)\<\/${firsttag}\>(.*)$/s) {
                 my $ix = $1;
                 $innerxml .= $ix;
                 $ixml .= $ix;
@@ -278,35 +308,30 @@ sub _ParseXML {
             }
         }        
         $xmlfragment  = $xmlfragment1 . $xmlfragment2;
-        while ( $attr =~ s/^[\s\n]*([^\s\=\n]+)\s*\=\s*(\".*?\"|\'.*?\')(.*)$/$3/g ) {
+        while ( $attr =~ s/^[\s\n]*([^\s\=\n]+)\s*\=\s*(\".*?\"|\'.*?\')(.*)$/$3/gs ) {
             my ($name, $val) = ($1, $2);
-            $val =~ s/^\'(.*)\'$/$1/g;
-            $val =~ s/^\"(.*)\"$/$1/g;
+            $val =~ s/^\'(.*)\'$/$1/gs;
+            $val =~ s/^\"(.*)\"$/$1/gs;
             push @attrarr, $name;
-            push @attrarr, $val;
+            push @attrarr, _entity($val);
         }
         while ( my $val = shift(@attrarr) ) {
-#            if (defined($rethash->{"$val" . "_$firsttag" . "_attr" })) {
-#                $rethash->{ "$val" . "_${firsttag}_" . ++$attrhash{"$val" . "_$firsttag" . "_attr"} . "_attr" } = shift(@attrarr);
-                $rethash->{ "$val" . "_${firsttag}_" . $attrcnt . "_attr" } = shift(@attrarr);
-#            } else { 
-#                $rethash->{ "$val" . "_$firsttag" . "_attr" } = shift(@attrarr);
-#            }
+                $rethash->{ "$val" . "_".&_unescp(${firsttag})."_" . $attrcnt . "_attr" } = shift(@attrarr);
         }
         $attrcnt++;
         $nextparse    = _ParseXML($innerxml);
         push @retarr, $nextparse;
     }
     if (@retarr) {
-        $rethash->{"$firsttag"} = \@retarr;
+        $rethash->{_unescp($firsttag)} = \@retarr;
     }
-    $xmlfragment =~ s/${firsttag}0x0/${firsttag}/g;
+    $xmlfragment =~ s/${firsttag}0x0/${firsttag}/gs;
     my $remainderparse = _ParseXML($xmlfragment);
     my $attrcnt;
     my $attrfrag;
     if ( ref($remainderparse) eq "HASH" ) {
         foreach ( keys %{$remainderparse} ) {
-            $rethash->{"$_"} = $remainderparse->{"$_"};
+            $rethash->{&_unescp($_)} = $remainderparse->{&_unescp($_)};
         }
     }
     if ( keys %{$rethash} ) {
@@ -350,7 +375,7 @@ Daniel Graham, E<lt>dgraham@firstteamsoft.com<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2008-2013 by Daniel Edward Graham
+Copyright (C) 2008-2014 by Daniel Edward Graham
 
 LGPL 3.0
 
