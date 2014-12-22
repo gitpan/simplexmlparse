@@ -3,7 +3,7 @@ package simpleXMLParse;
 # Perl Module: simpleXMLParse
 # Author: Daniel Edward Graham
 # Copyright (c) Daniel Edward Graham 2008-2014
-# Date: 12/7/2014 
+# Date: 12/21/2014 
 # License: LGPL 3.0
 # 
 
@@ -24,7 +24,7 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 	
 );
 
-$VERSION = '2.7';
+$VERSION = '2.8';
 
 use Carp;
 use strict;
@@ -192,7 +192,7 @@ sub _ParseXML {
     $firsttag =~ s/\^/\\\^/gs;
     $firsttag =~ s/\-/\\\-/gs;
 
-    if ( $xml =~ /^[\s\n]*\<${firsttag}(\>|\s[^\>]*[^\/]\>)(.*?)\<\/${firsttag}\>(.*)$/s )
+    if ( $xml =~ /^[\s\n]*\<${firsttag}(\>|[\s\n]\>|[\s\n][^\>]*[^\/]\>)(.*?)\<\/${firsttag}\>(.*)$/s )
     {
         $attr        = $1;
         $innerxml    = $2;
@@ -200,7 +200,7 @@ sub _ParseXML {
         $attr =~ s/\>$//gs;
     }
     else {
-      if ( $xml =~ /^[\s\n]*\<${firsttag}(\/\>|\s[^\>]*\/\>)(.*)$/s ) {
+      if ( $xml =~ /^[\s\n]*\<${firsttag}(\/\>|[\s\n][^\>]*\/\>)(.*)$/s ) {
         $attr = $1;
         $innerxml = "";
         $xmlfragment = $2;
@@ -213,9 +213,8 @@ sub _ParseXML {
       }
     }
     my $ixml = $innerxml;
-    while ($ixml =~ /^.*?\<${firsttag}(\>|\s[^\>]*[^\/]\>)(.*?)$/s) {
+    while ($ixml =~ /^.*?\<${firsttag}(\>|[\s\n]\>|[\s\n][^\>]*[^\/]\>)(.*?)$/s) {
         $ixml = $2;
-        print STDERR "***\n";
         $innerxml .= "</${firsttag}>";
         if ($xmlfragment =~ /^(.*?)\<\/${firsttag}\>(.*)$/s) {
             my $ix = $1;
@@ -246,7 +245,7 @@ sub _ParseXML {
     $attrcnt++;
     while (1) {
         if ( $xmlfragment =~
-            /^(.*?)\<${firsttag}(\>|\s[^\>]*[^\/]\>)(.*?)\<\/${firsttag}\>(.*)$/s )
+            /^(.*?)\<${firsttag}(\>|[\s\n]\>|[\s\n][^\>]*[^\/]\>)(.*?)\<\/${firsttag}\>(.*)$/s )
         {
             if ( !$retflag ) {
                 push @retarr, $nextparse;
@@ -257,7 +256,7 @@ sub _ParseXML {
             $innerxml     = $3;
             $xmlfragment2 = $4;
         } else {
-          if ( $xmlfragment =~ /^(.*?)\<${firsttag}(\/\>|\s[^\>]*\/\>)(.*)$/s ) {
+          if ( $xmlfragment =~ /^(.*?)\<${firsttag}(\/\>|[\s\n][^\>]*\/\>)(.*)$/s ) {
             if ( !$retflag ) {
                 push @retarr, $nextparse;
             }
@@ -295,7 +294,7 @@ sub _ParseXML {
         }
         next if ($flag);
         my $ixml = $innerxml;
-        while ($ixml =~ /.*?\<${firsttag}(\>|\s[^\>]*[^\/]\>)(.*?)$/s) {
+        while ($ixml =~ /.*?\<${firsttag}(\>|[\s\n]\>|[\s\n][^\>]*[^\/]\>)(.*?)$/s) {
             $ixml = $2;
             $innerxml .= "</${firsttag}>";
             if ($xmlfragment2 =~ /(.*?)\<\/${firsttag}\>(.*)$/s) {
@@ -353,13 +352,14 @@ simpleXMLParse - Perl extension for pure perl XML parsing
 
   use simpleXMLParse;
   use Data::Dumper;
-  my $parse = new simpleXMLParse({input => $fn, style => $style});
+  my $parse = new simpleXMLParse(input => $fn, style => $style);
 
   print Dumper($parse->parse());
 
 =head1 DESCRIPTION
 
-  simpleXMLParse currently handles everything including CDATA.
+  simpleXMLParse currently handles everything including CDATA
+  with the exception of DTD and DTD syntax
 
   style is "1" or "2".
 
